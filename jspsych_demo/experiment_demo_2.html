@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <!-- The <head> element is a container for metadata (information about the web page's properties and links to external related files) -->
+    <head>
+        <!-- The <title> tag defines the title of the document -->
+        <title>Hello world experiment</title>
+
+        <!-- Import the jspsych library -->
+        <script src="jspsych-6.3.1/jspsych.js"></script>
+        <!-- Import the jspsych 'visual style' -->
+        <link href="jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+
+        <!-- Import the jspsych plugins that we will use -->
+        <script src="jspsych-6.3.1/plugins/jspsych-instructions.js"></script>
+        <script src="jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+        <script src="_assets/_custom_plugins/jspsych-frame-rate.js"></script>
+    </head>
+
+    <!-- The <body> element contains all the contents of an HTML document, such as headings, paragraphs, images, hyperlinks, tables, lists -->
+    <body>
+    </body>
+
+    <!-- The <script> tag is used to embed a client-side script (JavaScript) -->
+    <script>
+        /* Define the trials */
+        var instruction_trial = {
+            type: 'instructions',
+            pages: [
+                'Welcome to the Hello world experiment.<br/>Click Next to go to the second page of instruction.',
+                'This is the second page of instructions.<br/>Click Next to begin.'
+            ],
+            show_clickable_nav: true
+        }
+        var hello_trial = {
+            type: 'html-keyboard-response',
+            stimulus: 'Hello world!<br/>Press any key to continue.'
+        }
+        var retrieve_frame_rate = {
+            type: 'frame-rate',
+            frame_count: 240
+        }
+
+        /* Init jsPsych and define the experiment timeline */
+        jsPsych.init({
+            timeline: [retrieve_frame_rate, instruction_trial, hello_trial],
+            on_finish: function() {
+                /* Callback executed once the experiment is finished */
+
+                // Display the data
+                jsPsych.data.displayData();
+            }
+        });
+    </script>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+    <!-- The <head> element is a container for metadata (information about the web page's properties and links to external related files) -->
+    <head>
+        <!-- The <title> tag defines the title of the document -->
+        <title>Hello world experiment</title>
+
+        <!-- Import the jspsych library -->
+        <script src="jspsych-6.3.1/jspsych.js"></script>
+        <!-- Import the jspsych 'visual style' -->
+        <link href="jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+
+        <!-- Import the jspsych plugins that we will use -->
+        <script src="jspsych-6.3.1/plugins/jspsych-instructions.js"></script>
+        <script src="jspsych-6.3.1/plugins/jspsych-categorize-image.js"></script>
+        <script src="_assets/_custom_plugins/jspsych-frame-rate.js"></script>
+        
+        <!-- Import external javascript file to save file on computer -->
+        <script src="http://cdn.jsdelivr.net/g/filesaver.js"></script>
+    </head>
+
+    <!-- The <body> element contains all the contents of an HTML document, such as headings, paragraphs, images, hyperlinks, tables, lists -->
+    <body>
+    </body>
+
+    <!-- The <script> tag is used to embed a client-side script (JavaScript) -->
+    <script>
+        /* Define the trials */
+        var retrieve_frame_rate = {
+            type: 'frame-rate',
+            frame_count: 240
+        }
+        var instruction_trial = {
+            type: 'instructions',
+            pages: [
+                'Welcome to this HOORDS Journal Club demo experiment.<br/>Click Next to read instruction.',
+                'The task is a mental rotation task.<br/>You will see pictures of an avatar, with either the right of left hand highligthed.<br/>If the left hand is highlighted, press the left arrow on your keyboard.<br/>If the right hand is highlighted, press the right arrow on your keyboard.',
+                'Click Next to begin.'
+            ],
+            show_clickable_nav: true
+        }
+        var OBT_trial_0LH = {
+            type: 'categorize-image',
+            stimulus: '_assets/_pictures/p_M0LH.png',
+            key_answer: 'ArrowLeft',
+            choices: ['ArrowLeft', 'ArrowRight'],
+            correct_text: "<p style='color:#00FF00'>Correct! The left hand was highlighted.</p>",
+            incorrect_text: "<p style='color:#FF0000'>Incorrect. The left hand was highlighted.</p>",
+            prompt: "<p>Which hand is highlighted?</p>",
+            show_stim_with_feedback: false,
+            timeout_message: "Please respond faster.",
+            stimulus_duration: 250,
+            feedback_duration: 500,
+            trial_duration:2500
+        }
+        var OBT_trial_0RH = {
+            type: 'categorize-image',
+            stimulus: '_assets/_pictures/p_M0RH.png',
+            key_answer: 'ArrowRight',
+            choices: ['ArrowLeft', 'ArrowRight'],
+            correct_text: "<p style='color:#00FF00'>Correct! The right hand was highlighted.</p>",
+            incorrect_text: "<p style='color:#FF0000'>Incorrect. The right hand was highlighted.</p>",
+            prompt: "<p>Which hand is highlighted?</p>",
+            show_stim_with_feedback: false,
+            timeout_message: "Please respond faster.",
+            stimulus_duration: 250,
+            feedback_duration: 500,
+            trial_duration:2500
+        }
+        var OBT_trial_180LH = {
+            type: 'categorize-image',
+            stimulus: '_assets/_pictures/p_M180LH.png',
+            key_answer: 'ArrowLeft',
+            choices: ['ArrowLeft', 'ArrowRight'],
+            correct_text: "<p style='color:#00FF00'>Correct! The left hand was highlighted.</p>",
+            incorrect_text: "<p style='color:#FF0000'>Incorrect. The left hand was highlighted.</p>",
+            prompt: "<p>Which hand is highlighted?</p>",
+            show_stim_with_feedback: false,
+            timeout_message: "Please respond faster.",
+            stimulus_duration: 250,
+            feedback_duration: 500,
+            trial_duration:2500
+        }
+        var OBT_trial_180RH = {
+            type: 'categorize-image',
+            stimulus: '_assets/_pictures/p_M180RH.png',
+            key_answer: 'ArrowRight',
+            choices: ['ArrowLeft', 'ArrowRight'],
+            correct_text: "<p style='color:#00FF00'>Correct! The right hand was highlighted.</p>",
+            incorrect_text: "<p style='color:#FF0000'>Incorrect. The right hand was highlighted.</p>",
+            prompt: "<p>Which hand is highlighted?</p>",
+            show_stim_with_feedback: false,
+            timeout_message: "Please respond faster.",
+            stimulus_duration: 250,
+            feedback_duration: 500,
+            trial_duration:2500
+        }
+
+        /* Create the timeline with several trials */
+        var array_timeline = [retrieve_frame_rate, instruction_trial];
+        var array_trials_OBT = [];
+        var nb_trial_repetitions = 2;
+        for (var idx = 0; idx < nb_trial_repetitions; idx++) {
+            array_trials_OBT.push(OBT_trial_0LH, OBT_trial_0RH, OBT_trial_180LH, OBT_trial_180RH);
+        }
+        shuffle(array_trials_OBT);
+        array_timeline = array_timeline.concat(array_trials_OBT);
+
+        /* Init jsPsych and define the experiment timeline */
+        jsPsych.init({
+            timeline: array_timeline,
+            on_finish: function() {
+                /* Callback executed once the experiment is finished */
+
+                // Display some final feedback to the participant
+                var correct_trials = jsPsych.data.get().filter({correct: true});
+                var incorrect_trials = jsPsych.data.get().filter({correct: false});
+                document.body.innerHTML = "You made " + correct_trials.count() + " correct answers out of " + (correct_trials.count() + incorrect_trials.count()) + " trials.";
+
+                // Save the data as json
+                jsPsych.data.get().json();
+                var currentdate = new Date(); 
+                var filename = "[" + currentdate.getFullYear() + "_"
+                + (currentdate.getMonth()+1)  + "_" 
+                + currentdate.getDate() + "] ["  
+                + currentdate.getHours() + "_"  
+                + currentdate.getMinutes() + "_" 
+                + currentdate.getSeconds() + "] saved_data";
+                var blob = new Blob( [ jsPsych.data.get().json() ], {
+		            type: 'application/json'
+	            });
+                saveAs(blob, filename+".json");
+                //
+            }
+        });
+
+        // Fisher–Yates shuffle algorithm
+        function shuffle(a) {
+            var j, x, i;
+            for (i = a.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1));
+                x = a[i];
+                a[i] = a[j];
+                a[j] = x;
+            }
+            return a;
+        }
+    </script>
+</html>
